@@ -233,6 +233,9 @@ def run(flags_obj):
                       validation_data=validation_data,
                       validation_freq=flags_obj.epochs_between_evals,
                       verbose=2)
+  if flags_obj.enable_eager and flags_obj.output_saved_model_dir:
+    tf.saved_model.save(model, flags_obj.output_saved_model_dir)
+                        #signatures={tf.saved_model.DEFAULT_SERVING_SIGNATURE_DEF_KEY: tf.function(
 
   eval_output = None
   if not flags_obj.skip_eval:

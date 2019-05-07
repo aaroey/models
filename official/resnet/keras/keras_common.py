@@ -262,6 +262,17 @@ def define_keras_flags():
 
   flags.DEFINE_boolean(name='enable_eager', default=False, help='Enable eager?')
   flags.DEFINE_boolean(name='skip_eval', default=False, help='Skip evaluation?')
+  flags.DEFINE_boolean(name='inference_only', default=False,
+                       help='Inference only?')
+  flags.DEFINE_boolean(name='freeze_when_inference_only', default=False,
+                       help='Freeze the graph when inference?')
+  flags.DEFINE_boolean(
+      name='tensorrt_mode', default=None,
+      help='TensorRT precision mode to run the TF-TRT conversion. If not set '
+      'or inference_only is False or freeze_when_inference_only is False, '
+      'TF-TRT will be disabled.')
+  flags.DEFINE_boolean(name='output_saved_model_dir', default=None,
+                       help='The directory to write the output SavedModel.')
   flags.DEFINE_boolean(name='use_trivial_model', default=False,
                        help='Whether to use a trivial Keras model.')
   flags.DEFINE_boolean(
