@@ -172,6 +172,9 @@ class Resnet50KerasBenchmarkBase(keras_benchmark.KerasBenchmark):
         total_batch_size=FLAGS.batch_size,
         log_steps=FLAGS.log_steps)
 
+  ##############################################################################
+  # This is the one that is used by aaroey-run.sh !!!
+  ##############################################################################
   def benchmark_1_gpu_no_dist_strat(self):
     """Test Keras model with 1 GPU, no distribution strategy."""
     self._setup()
@@ -180,12 +183,15 @@ class Resnet50KerasBenchmarkBase(keras_benchmark.KerasBenchmark):
     FLAGS.enable_eager = True
     FLAGS.distribution_strategy = 'off'
     FLAGS.model_dir = self._get_model_dir('benchmark_1_gpu_no_dist_strat')
-    FLAGS.batch_size = 128
+    FLAGS.batch_size = 16
+
+    FLAGS.train_steps = 1
+    FLAGS.output_saved_model_dir = '/tmp/keras_tftrt/smdir'
+    FLAGS.inference_only = True
+    FLAGS.freeze_when_inference_only = True
+    FLAGS.tensorrt_precision_mode = 'FP16'
     self._run_and_report_benchmark()
 
-  ##############################################################################
-  # This is the one that is used by aaroey-run.sh !!!
-  ##############################################################################
   def benchmark_graph_1_gpu_no_dist_strat(self):
     """Test Keras model in legacy graph mode with 1 GPU, no dist strat."""
     self._setup()
@@ -194,7 +200,7 @@ class Resnet50KerasBenchmarkBase(keras_benchmark.KerasBenchmark):
     FLAGS.enable_eager = False
     FLAGS.distribution_strategy = 'off'
     FLAGS.model_dir = self._get_model_dir('benchmark_graph_1_gpu_no_dist_strat')
-    FLAGS.batch_size = 16  # BatchNorm is less efficient in legacy graph mode
+    FLAGS.batch_size = 96  # BatchNorm is less efficient in legacy graph mode
                            # due to its reliance on v1 cond.
     self._run_and_report_benchmark()
 

@@ -235,7 +235,17 @@ def run(flags_obj):
                       verbose=2)
   if flags_obj.enable_eager and flags_obj.output_saved_model_dir:
     tf.saved_model.save(model, flags_obj.output_saved_model_dir)
-                        #signatures={tf.saved_model.DEFAULT_SERVING_SIGNATURE_DEF_KEY: tf.function(
+    if flags_obj.inference_only and flags_obj.freeze_when_inference_only and flags_obj.tensorrt_precision_mode:
+      from tensorflow.python.compiler.tensorrt import trt_convert
+      converter = trt_convert.TrtGraphConverterV2(
+          input_saved_model_dir=flags_obj.output_saved_model_dir,
+          conversion_params=trt_convert.DEFAULT_TRT_CONVERSION_PARAMS._replace(
+              precision_mode=flags_obj.tensorrt_precision_mode,
+              is_dynamic_op=True,
+              maximum_cached_engines=100,  # Set a large number for language models.
+              use_function_backup=False))
+      converter.convert()
+      converter.save(flags_obj.output_saved_model_dir + '-trt')
 
   eval_output = None
   if not flags_obj.skip_eval:
